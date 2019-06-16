@@ -29,9 +29,13 @@ class Model {
 
   async train() {
     this.build();
+    console.log('model build: done');
     await this.data.separation();
+    console.log('data separation: done');
     this.data.applyFilter();
+    console.log('applyFilter: done');
     this.data.makePair();
+    console.log('makePair: done');
 
     const optimizer = tf.train.adam(0.0001);
     this.model.compile({ optimizer: optimizer, loss: 'meanSquaredError', metrics: ['accuracy'] });
@@ -40,10 +44,10 @@ class Model {
       const { xs, ys } = this.data.nextBatch();
 
       const h = await this.model.fit(xs, ys, {
-          batchSize: 100,
           epochs: 50,
           shuffle: true,
-          validationSplit: 0.3
+          validationSplit: 0.3,
+          callbacks: tf.callbacks.earlyStopping({ minDelta: 0.01 })
       });
 
       console.log("Loss after Epoch " + i + " : " + h.history.loss[0]);

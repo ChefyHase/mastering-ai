@@ -95,6 +95,8 @@ class Data {
       }
 
       this.sounds.push({ buffers: [randL, randR] });
+
+      console.log(i + ' / ' + config.numSamples);
     }
   }
 

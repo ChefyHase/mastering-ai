@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "npx jest",
-    "start": "node bin/mastering.js"
+    "train": "node --max_old_space_size=4096 index.js",
+    "mastering": "node --max_old_space_size=4096 bin/mastering.js"
   },
   "keywords": [],
   "author": "ChefyHase <chefyhase@gmail.com> (http://chefyhase.example.com)",
