@@ -11,11 +11,11 @@ class Model {
   build() {
     const input = tf.input({ shape: [2, 2, 1025] });
 
-    const conv1d = tf.layers.conv2d({ dataFormat: 'channelsFirst', filters: 5, kernelSize: 2, strides: 2 }).apply(input);
+    const conv1d = tf.layers.conv2d({ dataFormat: 'channelsFirst', filters: 5, kernelSize: 2, strides: 1 }).apply(input);
     const encoderActiv = tf.layers.leakyReLU().apply(conv1d);
 
     const flatten = tf.layers.flatten().apply(conv1d);
-    const dense = tf.layers.dense({ units: 1024 }).apply(flatten);
+    const dense = tf.layers.dense({ units: 512 }).apply(flatten);
     const decoderActiv = tf.layers.leakyReLU().apply(dense);
 
     const decode1 = tf.layers.dense({ units: 1024 }).apply(decoderActiv);
