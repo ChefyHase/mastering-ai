@@ -15,7 +15,7 @@ class Model {
     const encoderActiv = tf.layers.leakyReLU().apply(conv1d);
 
     const flatten = tf.layers.flatten().apply(conv1d);
-    const dense = tf.layers.dense({ units: 512 }).apply(flatten);
+    const dense = tf.layers.dense({ units: 1024 }).apply(flatten);
     const decoderActiv = tf.layers.leakyReLU().apply(dense);
 
     const decode1 = tf.layers.dense({ units: 1024 }).apply(decoderActiv);
