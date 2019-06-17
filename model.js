@@ -11,7 +11,7 @@ class Model {
   build() {
     const input = tf.input({ shape: [2, 2, 1025] });
 
-    const conv1d = tf.layers.conv2d({ dataFormat: 'channelsFirst', filters: 50, kernelSize: 2, strides: 1 }).apply(input);
+    const conv1d = tf.layers.conv2d({ dataFormat: 'channelsFirst', filters: 5, kernelSize: 2, strides: 1 }).apply(input);
     const encoderActiv = tf.layers.leakyReLU().apply(conv1d);
 
     const flatten = tf.layers.flatten().apply(conv1d);
@@ -43,6 +43,7 @@ class Model {
       const { xs, ys } = this.data.nextBatch();
 
       const h = await this.model.fit(xs, ys, {
+          batchSize: 100,
           epochs: 30,
           shuffle: true,
           validationSplit: 0.3
