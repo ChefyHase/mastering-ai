@@ -118,35 +118,48 @@ class Data {
   }
 
   makePair() {
-    for (let sound of this.sounds) {
-      const buffers = sound.buffers;
-      const filteredBuffers = sound.filteredBuffers;
+    tf.tidy(() => {
+      for (let sound of this.sounds) {
+        const buffers = sound.buffers;
+        const filteredBuffers = sound.filteredBuffers;
 
-      for (let i = 0; i < buffers[0].length; i++) {
-        let bufferFft = [
-          this.fft(tf.tensor(buffers[0][i])),
-          this.fft(tf.tensor(buffers[1][i]))
-        ];
-        let filteredFft = [
-          this.fft(tf.tensor(filteredBuffers[0][i])),
-          this.fft(tf.tensor(filteredBuffers[1][i]))
-        ];
-        let dataSet = [
-          [
-            [tf.real(bufferFft[0]).arraySync(), tf.imag(bufferFft[0]).arraySync()], // not filtered L-chunnel
-            [tf.real(bufferFft[1]).arraySync(), tf.imag(bufferFft[1]).arraySync()]  // not filtered R-chunnel
-          ],
-          [
-            [tf.real(filteredFft[0]).arraySync(), tf.imag(filteredFft[0]).arraySync()], // filtered L-chunnel
-            [tf.real(filteredFft[1]).arraySync(), tf.imag(filteredFft[1]).arraySync()]  // filtered R-chunnel
-          ]
-        ];
+        for (let i = 0; i < buffers[0].length; i++) {
+          let bufferFfts = [tf.tensor(buffers[0][i]), tf.tensor(buffers[1][i])];
+          let bufferFft = [
+            this.fft(bufferFfts[0]),
+            this.fft(bufferFfts[1])
+          ];
+          this.disposer(bufferFfts);
 
-        this.dataSets.push(dataSet);
+          let filteredFfts = [tf.tensor(filteredBuffers[0][i]), tf.tensor(filteredBuffers[1][i])];
+          let filteredFft = [
+            this.fft(filteredFfts[0]),
+            this.fft(filteredFfts[1])
+          ];
+          this.disposer(filteredFfts);
+
+          let L = [tf.real(bufferFft[0]), tf.imag(bufferFft[0])];
+          let R = [tf.real(bufferFft[1]), tf.imag(bufferFft[1])];
+          let filtL = [tf.real(filteredFft[0]), tf.imag(filteredFft[0])];
+          let filtR = [tf.real(filteredFft[1]), tf.imag(filteredFft[1])];
+          let dataSet = [
+            [
+              [L[0].arraySync(), L[1].arraySync()], // not filtered L-chunnel
+              [R[0].arraySync(), R[1].arraySync()]  // not filtered R-chunnel
+            ],
+            [
+              [filtL[0].arraySync(), filtL[1].arraySync()], // filtered L-chunnel
+              [filtR[0].arraySync(), filtR[1].arraySync()]  // filtered R-chunnel
+            ]
+          ];
+          this.disposer([...L, ...R, ...filtL, ...filtR]);
+
+          this.dataSets.push(dataSet);
+        }
       }
-    }
 
-    this.dataSets = _.shuffle(this.dataSets);
+      this.dataSets = _.shuffle(this.dataSets);
+    });
   }
 
   // log10(x) {
@@ -241,6 +254,12 @@ class Data {
       const y = tf.tensor(ybatchs, [config.bathSize, 2, 2, this.shortTimeSamples / 2 + 1]);
 
       return { xs: x, ys: y };
+    });
+  }
+
+  disposer(tensors) {
+    tensors.forEach((elem) => {
+      elem.dispose();
     });
   }
 }

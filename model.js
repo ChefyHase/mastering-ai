@@ -44,10 +44,9 @@ class Model {
       const { xs, ys } = this.data.nextBatch();
 
       const h = await this.model.fit(xs, ys, {
-          epochs: 50,
+          epochs: 100,
           shuffle: true,
-          validationSplit: 0.3,
-          callbacks: tf.callbacks.earlyStopping({ minDelta: 0.01 })
+          validationSplit: 0.3
       });
 
       console.log("Loss after Epoch " + i + " : " + h.history.loss[0]);
