@@ -11,10 +11,13 @@ class Model {
   build() {
     const input = tf.input({ shape: [2, 2, 1025] });
 
-    const conv1d = tf.layers.conv2d({ dataFormat: 'channelsFirst', filters: 5, kernelSize: 2, strides: 1 }).apply(input);
+    const conv1d = tf.layers.conv2d({ dataFormat: 'channelsFirst', filters: 5, kernelSize: [1, 2], strides: 1 }).apply(input);
     const encoderActiv = tf.layers.leakyReLU().apply(conv1d);
 
-    const flatten = tf.layers.flatten().apply(conv1d);
+    const encode1 = tf.layers.conv2d({ dataFormat: 'channelsFirst', filters: 10, kernelSize: [1, 2], strides: 2 }).apply(encoderActiv);
+    const encoderActiv1 = tf.layers.leakyReLU().apply(encode1);
+
+    const flatten = tf.layers.flatten().apply(encoderActiv1);
     const dense = tf.layers.dense({ units: 512 }).apply(flatten);
     const decoderActiv = tf.layers.leakyReLU().apply(dense);
 
@@ -22,10 +25,8 @@ class Model {
     const decoderActiv1 = tf.layers.leakyReLU().apply(decode1);
     const decode2 = tf.layers.dense({ units: 2048 }).apply(decoderActiv1);
     const decoderActiv2 = tf.layers.leakyReLU().apply(decode2);
-    const decode3 = tf.layers.dense({ units: 3096 }).apply(decoderActiv2);
-    const decoderActiv3 = tf.layers.leakyReLU().apply(decode3);
 
-    const decodeDense = tf.layers.dense({ units: 4100 }).apply(decoderActiv3);
+    const decodeDense = tf.layers.dense({ units: 4100 }).apply(decoderActiv2);
     const decoderA = tf.layers.leakyReLU().apply(decodeDense);
     const reshape = tf.layers.reshape({ targetShape: [2, 2, 1025] }).apply(decoderA);
 
@@ -45,6 +46,7 @@ class Model {
       const { xs, ys } = this.data.nextBatch();
 
       const h = await this.model.fit(xs, ys, {
+          batchSize: 100,
           epochs: 30,
           shuffle: true,
           validationSplit: 0.3
