@@ -9,7 +9,8 @@
   "scripts": {
     "test": "npx jest",
     "train": "node --max_old_space_size=4096 index.js",
-    "mastering": "node --max_old_space_size=4096 bin/mastering.js"
+    "mastering": "node --max_old_space_size=4096 bin/mastering.js",
+    "dataSet": "node --max_old_space_size=6144 data/dataset2json.js"
   },
   "keywords": [],
   "author": "ChefyHase <chefyhase@gmail.com> (http://chefyhase.example.com)",
@@ -20,6 +21,7 @@
     "jest": "^24.8.0",
     "lodash": "^4.17.11",
     "node-peaking": "github:ChefyHase/node-peaking",
+    "streamifier": "^0.1.1",
     "wav-decoder": "^1.3.0",
     "wav-encoder": "^1.3.0"
   }

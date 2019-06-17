@@ -30,12 +30,6 @@ class Model {
   async train() {
     this.build();
     console.log('model build: done');
-    await this.data.separation();
-    console.log('data separation: done');
-    this.data.applyFilter();
-    console.log('applyFilter: done');
-    this.data.makePair();
-    console.log('makePair: done');
 
     const optimizer = tf.train.adam(0.0001);
     this.model.compile({ optimizer: optimizer, loss: 'meanSquaredError', metrics: ['accuracy'] });
@@ -44,7 +38,7 @@ class Model {
       const { xs, ys } = this.data.nextBatch();
 
       const h = await this.model.fit(xs, ys, {
-          epochs: 100,
+          epochs: 10,
           shuffle: true,
           validationSplit: 0.3
       });

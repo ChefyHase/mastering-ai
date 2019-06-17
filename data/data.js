@@ -220,41 +220,48 @@ class Data {
 
   nextBatch() {
     return tf.tidy(() => {
+      this.loadDataset(this.batchIndex);
       let xbatchs = [];
       let ybatchs = [];
-      for (let i = 0; i < config.bathSize; i++) {
+      for (let i = 0; i < config.batchSize; i++) {
         xbatchs.push(
           [
             [
-              this.dataSets[this.batchIndex][0][0][0],  // L-chunnel real
-              this.dataSets[this.batchIndex][0][0][1]   // L-chunnel image
+              this.dataSets[i][0][0][0],  // L-chunnel real
+              this.dataSets[i][0][0][1]   // L-chunnel image
             ],
             [
-              this.dataSets[this.batchIndex][0][1][0],  // R-chunnel real
-              this.dataSets[this.batchIndex][0][1][1]   // R-chunnel image
+              this.dataSets[i][0][1][0],  // R-chunnel real
+              this.dataSets[i][0][1][1]   // R-chunnel image
             ]
           ]
         );
         ybatchs.push(
           [
             [
-              this.dataSets[this.batchIndex][1][0][0],  // L-chunnel real
-              this.dataSets[this.batchIndex][1][0][1]   // L-chunnel image
+              this.dataSets[i][1][0][0],  // L-chunnel real
+              this.dataSets[i][1][0][1]   // L-chunnel image
             ],
             [
-              this.dataSets[this.batchIndex][1][1][0],  // R-chunnel real
-              this.dataSets[this.batchIndex][1][1][1]   // R-chunnel image
+              this.dataSets[i][1][1][0],  // R-chunnel real
+              this.dataSets[i][1][1][1]   // R-chunnel image
             ]
           ]
         );
-        this.batchIndex++;
       }
+      this.batchIndex++;
 
-      const x = tf.tensor(xbatchs, [config.bathSize, 2, 2, this.shortTimeSamples / 2 + 1]);
-      const y = tf.tensor(ybatchs, [config.bathSize, 2, 2, this.shortTimeSamples / 2 + 1]);
+      const x = tf.tensor(xbatchs, [config.batchSize, 2, 2, this.shortTimeSamples / 2 + 1]);
+      const y = tf.tensor(ybatchs, [config.batchSize, 2, 2, this.shortTimeSamples / 2 + 1]);
 
       return { xs: x, ys: y };
     });
+  }
+
+  loadDataset(index) {
+    const filePath = config.dataSetPath + index + '.json';
+    let json = JSON.parse(fs.readFileSync(filePath));
+    this.dataSets = json;
   }
 
   disposer(tensors) {
