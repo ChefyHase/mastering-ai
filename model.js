@@ -16,11 +16,16 @@ class Model {
 
     const flatten = tf.layers.flatten().apply(conv1d);
     const dense = tf.layers.dense({ units: 512 }).apply(flatten);
-    const decoderActiv1 = tf.layers.leakyReLU().apply(dense);
+    const decoderActiv = tf.layers.leakyReLU().apply(dense);
 
-    const decodeDense = tf.layers.dense({ units: 4100 }).apply(decoderActiv1);
-    const decoderActiv2 = tf.layers.leakyReLU().apply(decodeDense);
-    const reshape = tf.layers.reshape({ targetShape: [2, 2, 1025] }).apply(decoderActiv2);
+    const decode1 = tf.layers.dense({ units: 1024 }).apply(decoderActiv);
+    const decoderActiv1 = tf.layers.leakyReLU().apply(decode1);
+    const decode2 = tf.layers.dense({ units: 2048 }).apply(decoderActiv1);
+    const decoderActiv2 = tf.layers.leakyReLU().apply(decode2);
+
+    const decodeDense = tf.layers.dense({ units: 4100 }).apply(decoderActiv2);
+    const decoderA = tf.layers.leakyReLU().apply(decodeDense);
+    const reshape = tf.layers.reshape({ targetShape: [2, 2, 1025] }).apply(decoderA);
 
     const model = tf.model({ inputs: input, outputs: reshape });
     model.summary();
