@@ -11,7 +11,7 @@ class Model {
   build() {
     const input = tf.input({ shape: [2, 2, 1025] });
 
-    const conv1d = tf.layers.conv2d({ dataFormat: 'channelsFirst', filters: 15, kernelSize: [1, 2], strides: 1 }).apply(input);
+    const conv1d = tf.layers.conv2d({ dataFormat: 'channelsFirst', filters: 30, kernelSize: [1, 10], strides: 4 }).apply(input);
     const encoderActiv = tf.layers.leakyReLU().apply(conv1d);
 
     const flatten = tf.layers.flatten().apply(conv1d);
