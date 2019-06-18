@@ -11,17 +11,19 @@ class Model {
   build() {
     const input = tf.input({ shape: [2, 2, 1025] });
 
-    const conv1d = tf.layers.conv2d({ dataFormat: 'channelsFirst', filters: 30, kernelSize: [1, 10], strides: 4 }).apply(input);
+    const conv1d = tf.layers.conv2d({ dataFormat: 'channelsFirst', filters: 5, kernelSize: [1, 1], strides: 1 }).apply(input);
     const encoderActiv = tf.layers.leakyReLU().apply(conv1d);
 
     const flatten = tf.layers.flatten().apply(conv1d);
-    const dense = tf.layers.dense({ units: 64 }).apply(flatten);
+    const dense = tf.layers.dense({ units: 512 }).apply(flatten);
     const decoderActiv = tf.layers.leakyReLU().apply(dense);
+    const drop1 = tf.layers.dropout({ rate: 0.5 }).apply(decoderActiv);
 
-    const decode1 = tf.layers.dense({ units: 512 }).apply(decoderActiv);
+    const decode1 = tf.layers.dense({ units: 3000 }).apply(drop1);
     const decoderActiv1 = tf.layers.leakyReLU().apply(decode1);
+    const drop2 = tf.layers.dropout({ rate: 0.5 }).apply(decoderActiv1);
 
-    const decodeDense = tf.layers.dense({ units: 4100 }).apply(decode1);
+    const decodeDense = tf.layers.dense({ units: 4100 }).apply(drop2);
     const decoderA = tf.layers.leakyReLU().apply(decodeDense);
     const reshape = tf.layers.reshape({ targetShape: [2, 2, 1025] }).apply(decoderA);
 
@@ -41,8 +43,8 @@ class Model {
       const { xs, ys } = this.data.nextBatch();
 
       const h = await this.model.fit(xs, ys, {
-          batchSize: 100,
-          epochs: 30,
+          batchSize: 200,
+          epochs: 100,
           shuffle: true,
           validationSplit: 0.3
       });
