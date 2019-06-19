@@ -19,11 +19,14 @@ class Model {
     const encoderActiv3 = tf.layers.leakyReLU().apply(conv3d);
 
     const flatten = tf.layers.flatten().apply(encoderActiv3);
-    const dense = tf.layers.dense({ units: 2048 }).apply(flatten);
-    const decoderActiv = tf.layers.leakyReLU().apply(dense);
-    const drop1 = tf.layers.dropout({ rate: 0.5 }).apply(decoderActiv);
+    const dense1 = tf.layers.dense({ units: 1024 }).apply(flatten);
+    const decoderActiv1 = tf.layers.leakyReLU().apply(dense1);
+    const drop1 = tf.layers.dropout({ rate: 0.5 }).apply(decoderActiv1);
+    const dense2 = tf.layers.dense({ units: 2048 }).apply(drop1);
+    const decoderActiv2 = tf.layers.leakyReLU().apply(dense2);
+    const drop2 = tf.layers.dropout({ rate: 0.5 }).apply(decoderActiv2);
 
-    const decodeDense = tf.layers.dense({ units: 4100 }).apply(drop1);
+    const decodeDense = tf.layers.dense({ units: 4100 }).apply(drop2);
     const decoderA = tf.layers.leakyReLU().apply(decodeDense);
     const reshape = tf.layers.reshape({ targetShape: [2, 2, 1025] }).apply(decoderA);
 
