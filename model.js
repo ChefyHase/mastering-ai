@@ -19,7 +19,7 @@ class Model {
     const encoderActiv3 = tf.layers.leakyReLU().apply(conv3d);
 
     const flatten = tf.layers.flatten().apply(encoderActiv3);
-    const dense = tf.layers.dense({ units: 1024 }).apply(flatten);
+    const dense = tf.layers.dense({ units: 2048 }).apply(flatten);
     const decoderActiv = tf.layers.leakyReLU().apply(dense);
     const drop1 = tf.layers.dropout({ rate: 0.5 }).apply(decoderActiv);
 
@@ -43,7 +43,7 @@ class Model {
       const { xs, ys } = this.data.nextBatch();
 
       const h = await this.model.fit(xs, ys, {
-          batchSize: 200,
+          batchSize: 100,
           epochs: 100,
           shuffle: true,
           validationSplit: 0.3
