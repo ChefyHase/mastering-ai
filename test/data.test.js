@@ -25,8 +25,7 @@ const Data = require('../data/data.js');
 
 test('nextBatch', async () => {
   const data = new Data();
-  await data.separation();
-  data.applyFilter();
-  data.makePair();
   const tns = data.nextBatch();
+  tns.xs.print(true);
+  tns.ys.print(true);
 });

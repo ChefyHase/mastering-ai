@@ -6,13 +6,13 @@ const config = require('../config.js');
   const data = new Data();
   await data.separation();
   data.applyFilter();
-  data.makePair();
+  data.makeDataset();
 
   for (let i = 0; i < config.trainEpoches; i++) {
     const filePath = config.dataSetPath + i + '.json';
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
 
-    const buffer = data.dataSets.slice(i * config.batchSize, (i + 1) * config.batchSize);
+    const buffer = data.dataSets[i];
     const json = JSON.stringify(buffer);
     const readStream = require('streamifier').createReadStream(Buffer.from(json));
     const writeStream = fs.createWriteStream(filePath);
